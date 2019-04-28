@@ -1,0 +1,10 @@
+
+http://localhost/nirjhor/youtube/youtube_Final/youtubeapp/public/admin/Search_by_title
+title:drama
+
+http://localhost/nirjhor/youtube/youtube_Final/youtubeapp/public/admin/Search_by_tags
+tags:drama,movie
+
+http://youtubeapp.ovie.winexsoft.com/public/admin/Search_by_tags
+tags:Bangla Natok,Comedy,Mosharraf Karim
+

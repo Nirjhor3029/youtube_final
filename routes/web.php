@@ -24,9 +24,7 @@ Route::get('testforurl', 'ProductController@getPath')->name("getPath");
 Route::get('/test', 'QueryController@test_rough');
 
 Route::get('/test2', function () {
-    echo substr("Hello world", 0, 30);
-
-
+    return view('admin.test');
 });
 //Route::get('/inbox/{id}', 'MessageController@singleMessage_test');
 
@@ -232,6 +230,10 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::get('/admin/users', 'AdminUsers@showPage')->name('userList');
     Route::get('/admin/add-user', 'AdminUsers@addNewUser')->name('addNewUser');
     Route::post('/admin/add-user-submit', 'AdminUsers@addNewUserSubmit')->name('addNewUserSubmit');
+    Route::get('/admin/edit-user/{id}', 'AdminUsers@editUser')->name('editUser');
+    Route::post('/admin/edit-user-submit/{id}', 'AdminUsers@editUserSubmit')->name('editUserSubmit');
+    Route::get('/admin/delete-user/{id}', 'AdminUsers@deleteUser')->name('deleteUser');
+
 
     Route::get('/admin/vdo-categories', 'AdminUsers@showVideoCategories')->name('videoCategories');
     Route::get('/admin/add-vdocategory', 'AdminUsers@addNewCategory')->name('addNewCategory');
@@ -374,7 +376,11 @@ Route::get('/admin/getData', 'ApiController@getData')->name('getData');
 
 Route::post('/admin/get-single_videoInfo', 'ApiController@getSingleVideoInfo')->name('getSingleVideoInfo');
 Route::get('/admin/get-single_videoInfo_get/{id}', 'ApiController@getSingleVideoInfoGet')->name('getSingleVideoInfoGet');
+
 Route::post('/admin/Search_by_title', 'ApiController@searchByTitle')->name('searchByTitle');
+Route::post('/admin/Search_by_tags', 'ApiController@searchByTags')->name('searchByTags');
+
+Route::post('/admin/Search_by_tag_ids', 'ApiController@searchByTagIds')->name('searchByTagIds');
 
 
 

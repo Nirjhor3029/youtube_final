@@ -22,10 +22,20 @@
             <h1>
                 User List
             </h1>
+
         </section>
 
+
         <section class="maincontent">
+
             <div class="col-md-12" style="margin-top:2rem;">
+
+
+                @if(isset($success))
+                <div class="alert alert-success">
+                    <strong>Success!</strong> {{$success}}
+                </div>
+                @endif
 
                 <div class="box box-danger">
 
@@ -51,7 +61,17 @@
                                     <td>{{$v_admin_user->email}}</td>
 
                                     <td>
-                                        delete [not done]
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <a href="{{route('editUser',$v_admin_user->id)}}"><i class="fa fa-edit"
+                                                                                                      style="font-size:30px;color:green"></i></a>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <a href="{{route('deleteUser',$v_admin_user->id)}}" onclick="return confirm('are you sure')"><i class="fa fa-remove"
+                                                                                                 style="font-size:30px;color:red"></i></a>
+                                            </div>
+
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

@@ -27,9 +27,6 @@
         height: 200px;
     }
 
-
-
-
     .double {
         zoom: 2;
         transform: scale(2);
@@ -56,7 +53,7 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Add New Video
+                Edit Video
             </h1>
         </section>
 
@@ -102,8 +99,6 @@
                                     </div>
 
 
-
-
                                     <div class="row form-group">
                                         <div class="col-sm-2">
                                             <label for="vendor_name" class="control-label">Sub Categoryt<span
@@ -127,10 +122,24 @@
                                                         style="color:red;">*</span> </label>
                                         </div>
                                         <div class="col-sm-10">
+
+                                            {{$videoInfo->tags}}
+                                            <?php
+                                                $tag_array = array();
+                                                $i = 0;
+                                            foreach ($videoInfo->tags as $tag) {
+                                                $tag_array[$i] =$tag->id;
+                                                $i++;
+                                            }
+
+                                                print_r($tag_array);
+                                            ?>
                                             <select class=" js-example-basic-multiple form-control" name="tags[]"
                                                     multiple="multiple" required>
                                                 @foreach($tags as $tag)
-                                                    <option value="{{$tag->id}}">{{$tag->title}}</option>
+
+                                                    {{$tag->id}}
+                                                    <option value="{{$tag->id}}" {{array_search($tag->id, $tag_array)? "selected":""}}>{{$tag->title}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -146,7 +155,8 @@
                                                         style="color:red;">*</span> </label>
                                         </div>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" name="newTags" placeholder="Comedy,Feature,Trend,New">
+                                            <input type="text" class="form-control" name="newTags"
+                                                   placeholder="Comedy,Feature,Trend,New">
                                         </div>
                                         {{--<div class="col-sm-2">
                                             <a class="btn btn-primary" data-toggle="modal" data-target="#myModal">Add
@@ -185,7 +195,8 @@
                                         </div>
                                         <div class="col-sm-10">
                                             <input type="text" class="form-control" placeholder="Enter Author Name"
-                                                   name="author_name" value="{{$videoInfo->video_author_name}}" required>
+                                                   name="author_name" value="{{$videoInfo->video_author_name}}"
+                                                   required>
                                         </div>
                                     </div>
 
@@ -209,7 +220,8 @@
                                         <div class="col-sm-10">
 
                                             <textarea class="form-control" name="description"
-                                                      placeholder="Enter Video Description" rows="10">{{$videoInfo->description}}</textarea>
+                                                      placeholder="Enter Video Description"
+                                                      rows="10">{{$videoInfo->description}}</textarea>
                                         </div>
                                     </div>
 
@@ -273,7 +285,8 @@
                                         </div>
                                         <div class="col-sm-10 double">
                                             {{--<input type="checkbox" class="form-control" name="checkbox" >--}}
-                                            <input type="checkbox" name="feature" value="1" {{($videoInfo->feature)? "checked" : ""}}>
+                                            <input type="checkbox" name="feature"
+                                                   value="1" {{($videoInfo->feature)? "checked" : ""}}>
 
                                         </div>
                                     </div>

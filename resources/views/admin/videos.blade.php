@@ -325,7 +325,7 @@
                                         {{--<i class="material-icons" style="font-size:36px">delete</i>--}}
                                         <div class="row">
                                             <div class="col-sm-2">
-                                                <a href="{{route('deleteVideo',$video->id)}}"><i class="fa fa-remove"
+                                                <a href="{{route('deleteVideo',$video->id)}}" onclick="return confirm('are you sure')"><i class="fa fa-remove"
                                                                                                  style="font-size:30px;color:red"></i></a>
                                             </div>
                                             <div class="col-sm-2">

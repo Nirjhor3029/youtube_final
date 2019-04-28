@@ -55,6 +55,15 @@
 
             <div class="col-md-12" style="margin-top:2rem;">
                 <div class="box box-primary">
+                    <?php
+                    $msg = null;
+                        $msg = Session::get('msg')
+                    ?>
+                    @if(isset($msg))
+                    <div class="alert alert-danger">
+                        <center><strong>Danger!</strong> {{$msg}}.</center>
+                    </div>
+                        @endif
                     <div class="box-body" style="margin-top:2rem;">
                         <form action="{{route('getVideoInfo')}}" method="post" class="form-horizontal"
                               enctype="multipart/form-data">
@@ -73,6 +82,8 @@
                                 <button class="btn btn-success pull-right" type="submit">Get Video Info</button>
                             </div>
                         </form>
+
+
 
                     </div>
                     <!-- /.box-body -->

@@ -86,6 +86,11 @@ class VideoController extends Controller
 
         //exit;
 
+        $check_vdo_exist = Video::where('video_id',$videoId)->count();
+       if ($check_vdo_exist > 0){
+           return Redirect::back()->with('msg','this video already added');
+       }
+
 
         $str = file_get_contents('https://www.youtube.com/oembed?url=' . $videoUrl . '&format=json');
 
@@ -345,7 +350,15 @@ class VideoController extends Controller
     {
         $vdo = Video::find($id);
 
-        return $vdo;
+        $tag_videos = TagVideo::where('video_id',$id)->get();
+        foreach($tag_videos as $data){
+            $data->delete();
+        }
+
+        //return $tag_videos;
+
+
+        //return $vdo;
         //exit;
 
         $this->saveUserLOg(Auth::user()->name, "Delete Video || Video ID ($vdo->id)");

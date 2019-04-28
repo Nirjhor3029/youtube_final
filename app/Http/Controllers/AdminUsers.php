@@ -34,7 +34,8 @@ class AdminUsers extends Controller
         return $path;
     }
 
-    public function saveUserLOg($user,$action){
+    public function saveUserLOg($user, $action)
+    {
         $userLog = new UserLog();
 
         $userLog->user_name = $user;
@@ -49,6 +50,7 @@ class AdminUsers extends Controller
         $admin_users = Admin::all();
         return view('admin.admin_users')->with('admin_users', $admin_users);
     }
+
     public function showUserLog()
     {
         $admin_users = UserLog::all();
@@ -58,6 +60,13 @@ class AdminUsers extends Controller
     public function addNewUser()
     {
         return view('admin.add_adminUser');
+    }
+
+    public function editUser($id)
+    {
+        $user = Admin::find($id);
+        //return $user;
+        return view('admin.add_adminUser')->with('user', $user);
     }
 
     public function addNewUserSubmit(Request $request)
@@ -73,13 +82,49 @@ class AdminUsers extends Controller
         $user->save();
 
 
-        $this->saveUserLOg(Auth::user()->name,"Add New User || user ID ($user->id)");
+        $this->saveUserLOg(Auth::user()->name, "Add New User || user ID ($user->id)");
 
 
-        return Redirect::to('admin/users');
+        return Redirect::to('admin/users')->with('success','New User Added Successfully');
 
     }
 
+    public function editUserSubmit(Request $request, $id)
+    {
+        //return $id;
+       /* if (isset($request->password)) {
+            echo "set";
+            exit;
+        }*/
+        //return $request;
+
+
+        $user = Admin::find($id);
+
+        $user->name = $request->name;
+        $user->job_title = $request->role;
+        $user->email = $request->email;
+        if (isset($request->password)) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+
+        $this->saveUserLOg(Auth::user()->name, "Add New User || user ID ($user->id)");
+
+
+        return Redirect::to('admin/users')->with('success',$user.' information updated');
+
+    }
+
+    public function deleteUser($id){
+        //return $id;
+        $user = Admin::find($id);
+        $user->delete();
+
+        return Redirect::back()->with('success',' User Deleted');
+    }
 
     /*Category*/
     public function showVideoCategories()
@@ -122,7 +167,7 @@ class AdminUsers extends Controller
         $vdo_category->save();
 
 
-        $this->saveUserLOg(Auth::user()->name,"Add New Category || Category ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Add New Category || Category ID ($vdo_category->id)");
 
 
         return Redirect::to('admin/vdo-categories');
@@ -140,10 +185,9 @@ class AdminUsers extends Controller
         //$vdo_category->vdoSubCategory()->delete();
 
 
+        $vdo_subCategories = VdoSubCategory::where('VdoCategory_id', $vdo_category->id)->get();
 
-        $vdo_subCategories = VdoSubCategory::where('VdoCategory_id',$vdo_category->id)->get();
-
-        foreach($vdo_subCategories as $sub_category){
+        foreach ($vdo_subCategories as $sub_category) {
 
 
             //echo $sub_category->title;
@@ -168,7 +212,7 @@ class AdminUsers extends Controller
             File::delete($logopath);
         }
 
-        $this->saveUserLOg(Auth::user()->name,"Delete Category || Category ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Delete Category || Category ID ($vdo_category->id)");
 
 
         $vdo_category->delete();
@@ -210,12 +254,11 @@ class AdminUsers extends Controller
 
         $vdo_category->save();
 
-        $this->saveUserLOg(Auth::user()->name,"Edit Category || Category ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Edit Category || Category ID ($vdo_category->id)");
 
 
         return Redirect::to('admin/vdo-categories');
     }
-
 
 
     /*Sub Category*/
@@ -260,7 +303,7 @@ class AdminUsers extends Controller
         $vdo_category->image = $fileurl;
         $vdo_category->save();
 
-        $this->saveUserLOg(Auth::user()->name,"Add New SubCategory || SubCategory ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Add New SubCategory || SubCategory ID ($vdo_category->id)");
 
 
         return Redirect::to('admin/vdo-subcategories');
@@ -282,7 +325,7 @@ class AdminUsers extends Controller
             File::delete($logopath);
         }
 
-        $this->saveUserLOg(Auth::user()->name,"Delete SubCategory || SubCategory ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Delete SubCategory || SubCategory ID ($vdo_category->id)");
 
 
         $vdo_category->delete();
@@ -327,14 +370,11 @@ class AdminUsers extends Controller
 
         $vdo_category->save();
 
-        $this->saveUserLOg(Auth::user()->name,"Edit SubCategory || SubCategory ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Edit SubCategory || SubCategory ID ($vdo_category->id)");
 
 
         return Redirect::to('admin/vdo-subcategories');
     }
-
-
-
 
 
     /*Tags*/
@@ -359,7 +399,7 @@ class AdminUsers extends Controller
         $vdo_category->title = $request->vendor_title;
         $vdo_category->save();
 
-        $this->saveUserLOg(Auth::user()->name,"Add New Tag || Tag ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Add New Tag || Tag ID ($vdo_category->id)");
 
 
         return Redirect::to('admin/tags');
@@ -371,7 +411,7 @@ class AdminUsers extends Controller
         $vdo_category = Tag::find($id);
         //exit;
 
-        $this->saveUserLOg(Auth::user()->name,"Delete Tag || Tag ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Delete Tag || Tag ID ($vdo_category->id)");
 
 
         $vdo_category->delete();
@@ -397,14 +437,11 @@ class AdminUsers extends Controller
 
         $vdo_category->save();
 
-        $this->saveUserLOg(Auth::user()->name,"Edit Tag || Tag ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Edit Tag || Tag ID ($vdo_category->id)");
 
 
         return Redirect::to('admin/tags');
     }
-
-
-
 
 
     /*App User Tokens*/
@@ -430,7 +467,7 @@ class AdminUsers extends Controller
         $vdo_category->save();
 
 
-        $this->saveUserLOg(Auth::user()->name,"Add New AppUserToken || AppUserToken ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Add New AppUserToken || AppUserToken ID ($vdo_category->id)");
 
 
         return Redirect::to('admin/appUsersToken');
@@ -441,7 +478,7 @@ class AdminUsers extends Controller
     {
         $vdo_category = AppUserToken::find($id);
         //exit;
-        $this->saveUserLOg(Auth::user()->name,"Delete AppUserToken || AppUserToken ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Delete AppUserToken || AppUserToken ID ($vdo_category->id)");
 
         $vdo_category->delete();
         return Redirect::back();
@@ -466,12 +503,10 @@ class AdminUsers extends Controller
 
         $vdo_category->save();
 
-        $this->saveUserLOg(Auth::user()->name,"Edit AppUserToken || AppUserToken ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Edit AppUserToken || AppUserToken ID ($vdo_category->id)");
 
         return Redirect::to('admin/appUsersToken');
     }
-
-
 
 
     /**

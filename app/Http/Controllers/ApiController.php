@@ -721,6 +721,193 @@ class ApiController extends Controller
         return $total;
     }
 
+    public function searchByTags(Request $request){
+        //return $request;
+        $tags = $request->tags;
+        $tags = explode(',',$tags);
+
+        $tags = Tag::whereIn('title',$tags)->get();
+
+        $tag_ids = array();
+
+        foreach($tags as $tag){
+            $tag_ids[] = $tag->id;
+        }
+
+        //return $tag_ids;
+
+        //print_r($tags);
+        //exit;
+
+        //$videos = Tag::with('videos')->find( [1, 2, 3]);
+        //$videos = Tag::with('videos')->whereIn('id', [1, 2, 3]);
+
+        /*$query = Video::query();
+
+        foreach ($tags as $tag) {
+            $query->whereHas('tags', function ($q) use($tag) {
+                $q->where('id', $tag);
+            });
+        }
+        $videos = $query->get();*/
+
+
+        $videos = Video::whereHas('tags', function($q) use($tag_ids) {
+            $q->whereIn('tag_id', $tag_ids)
+                ->groupBy('video_id')
+                ->havingRaw('COUNT(DISTINCT tag_id) = '.count($tag_ids));
+        })->inRandomOrder()->paginate($this->paginated_number);
+
+
+        $video_class = array();
+        $totalVideo = $videos->count();
+        $maxPage = $totalVideo / $this->paginated_number;
+        $maxPage = round($maxPage) + 1;
+
+        $i = 0;
+        foreach ($videos as $video) {
+            $tags = $video->tags;
+            $j = 0;
+            $all_tags = "";
+            foreach ($tags as $tag) {
+                $all_tags = $all_tags . "," . $tag->title;
+                $j++;
+            }
+            $video_class[$i] = [
+                "id" => $video->id,
+                "title" => $video->title,
+                "details" => $video->description,
+                "videoUrl" => $video->video_url,
+                "youtube_ID" => $video->video_id,
+                "thumbnil_image_link" => $video->thumbnail_url,
+                "tags" => $all_tags,
+                "cat_id" => $video->category_id,
+                "sub_cat_id" => $video->sub_category_id,
+                "duration" => $video->video_length,
+                "author_name" => $video->video_author_name,
+                "author_url" => $video->video_author_url,
+            ];
+            $i++;
+        }
+        $total = [
+            "status_code" => 200,
+            "status" => "success",
+            "pagination" => $maxPage,
+            "tag_id" => 0,
+            "tag" => "Nothing",
+            "cat_id" => 0,
+            "sub_cat_id" => 0,
+            "VideoClass" => $video_class,
+        ];
+        return $total;
+
+
+        return $videos;
+
+        //return $tags;
+
+
+    }
+    public function searchByTagIds(Request $request){
+        //return $request;
+        /*$tags = $request->tags;
+        $tags = explode(',',$tags);
+
+        $tags = Tag::whereIn('title',$tags)->get();
+
+        $tag_ids = array();
+
+        foreach($tags as $tag){
+            $tag_ids[] = $tag->id;
+        }*/
+
+        //return $tag_ids;
+
+        //print_r($tags);
+        //exit;
+
+        //$videos = Tag::with('videos')->find( [1, 2, 3]);
+        //$videos = Tag::with('videos')->whereIn('id', [1, 2, 3]);
+
+        /*$query = Video::query();
+
+        foreach ($tags as $tag) {
+            $query->whereHas('tags', function ($q) use($tag) {
+                $q->where('id', $tag);
+            });
+        }
+        $videos = $query->get();*/
+
+        $tag_ids = array();
+        $tags = $request->tags;
+        $tags = explode(',',$tags);
+
+        $tag_ids = $tags;
+        //$tag = Tag::find($tags);
+        //return $tag;
+
+       /* foreach($tags as $tag){
+            $tag_ids[] = $tag->id;
+        }*/
+        //return $tag_ids;
+
+        $videos = Video::whereHas('tags', function($q) use($tag_ids) {
+            $q->whereIn('tag_id', $tag_ids)
+                ->groupBy('video_id')
+                ->havingRaw('COUNT(DISTINCT tag_id) = '.count($tag_ids));
+        })->inRandomOrder()->paginate($this->paginated_number);
+
+
+        $video_class = array();
+        $totalVideo = $videos->count();
+        $maxPage = $totalVideo / $this->paginated_number;
+        $maxPage = round($maxPage) + 1;
+
+        $i = 0;
+        foreach ($videos as $video) {
+            $tags = $video->tags;
+            $j = 0;
+            $all_tags = "";
+            foreach ($tags as $tag) {
+                $all_tags = $all_tags . "," . $tag->title;
+                $j++;
+            }
+            $video_class[$i] = [
+                "id" => $video->id,
+                "title" => $video->title,
+                "details" => $video->description,
+                "videoUrl" => $video->video_url,
+                "youtube_ID" => $video->video_id,
+                "thumbnil_image_link" => $video->thumbnail_url,
+                "tags" => $all_tags,
+                "cat_id" => $video->category_id,
+                "sub_cat_id" => $video->sub_category_id,
+                "duration" => $video->video_length,
+                "author_name" => $video->video_author_name,
+                "author_url" => $video->video_author_url,
+            ];
+            $i++;
+        }
+        $total = [
+            "status_code" => 200,
+            "status" => "success",
+            "pagination" => $maxPage,
+            "tag_id" => 0,
+            "tag" => "Nothing",
+            "cat_id" => 0,
+            "sub_cat_id" => 0,
+            "VideoClass" => $video_class,
+        ];
+        return $total;
+
+
+        return $videos;
+
+        //return $tags;
+
+
+    }
+
     public function index()
     {
         //
