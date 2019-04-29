@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Admin;
 use App\AppUserToken;
 use App\Tag;
+use App\TagVideo;
 use App\UserLog;
 use App\VdoCategory;
 use App\VdoSubCategory;
@@ -410,6 +411,11 @@ class AdminUsers extends Controller
     {
         $vdo_category = Tag::find($id);
         //exit;
+
+        $tag_videos = TagVideo::where('tag_id',$id)->get();
+        foreach($tag_videos as $data){
+            $data->delete();
+        }
 
         $this->saveUserLOg(Auth::user()->name, "Delete Tag || Tag ID ($vdo_category->id)");
 
