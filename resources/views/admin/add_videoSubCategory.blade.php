@@ -57,9 +57,9 @@
                                     <div class="col-sm-10">
 
                                         <select class="form-control" name="category_id" required>
-                                            <option value="0">Select Category</option>
+                                            <option value="">Select Category</option>
                                             @foreach($vdo_categories as $v_category)
-                                                <option value="{{$v_category->id}}">{{$v_category->title}}</option>
+                                                <option value="{{$v_category->id}}" }}>{{$v_category->title}}</option>
                                             @endforeach
                                         </select>
 
@@ -113,10 +113,11 @@
                                     <div class="col-sm-10">
 
                                         <select class="form-control" name="category_id" required>
-                                            <option value="0">Select Category</option>
+                                            <option value="">Select Category</option>
                                             @foreach($vdo_categories as $v_category)
-                                                <option value="{{$v_category->id}}">{{$v_category->title}}</option>
+                                                <option value="{{$v_category->id}}" {{($v_category->id == $vdo_category->VdoCategory_id )? "selected": ""}}>{{$v_category->title}}</option>
                                             @endforeach
+                                            <option >ok</option>
                                         </select>
 
 

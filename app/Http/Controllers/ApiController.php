@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Tag;
+use App\TagVideo;
 use App\VdoCategory;
 use App\VdoSubCategory;
 use App\Video;
@@ -477,20 +478,31 @@ class ApiController extends Controller
     public function getVideoAsTag(Request $request)
     {
 
-        $totalVideo = Tag::all()->count();
 
+
+
+        $tag = $request->tag;
+        $tag = Tag::where('title',$tag)->first();
+        //return $tag;
+        //$videos = Tag::where('title', $tags)->with('videos')->paginate(10);
+
+        $videos = TagVideo::where('tag_id',$tag->id)->paginate($this->paginated_number);
+
+        /*Pagination page number*/
+        $totalVideo = $videos->count();
         $maxPage = $totalVideo / $this->paginated_number;
         $maxPage = round($maxPage) + 1;
+        /*Pagination page number*/
 
-
-        $tags = $request->tag;
-        //return $tags;
-        $videos = Tag::where('title', $tags)->with('videos')->inRandomOrder()->paginate($this->paginated_number);
         //return $videos;
 
-        $videoss = $videos[0]->videos;
+        //$videoss = $videos[0]->videos;
         $i = 0;
-        foreach ($videoss as $video) {
+        foreach ($videos as $video) {
+
+            /*Extra*/
+            $video = Video::find($video->video_id);
+            /*Extra*/
 
             $tags = $video->tags;
             $j = 0;

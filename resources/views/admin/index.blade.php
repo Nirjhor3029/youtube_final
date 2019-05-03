@@ -5,7 +5,6 @@
 
 @section('content')
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
                 Dashboard
@@ -13,12 +12,8 @@
             </h1>
         </section>
 
-        <!-- Main content -->
-        <section class="maincontent">
-            <!-- Small boxes (Stat box) -->
-
+        <section class="maincontent row container-fluid">
             <div class="col-lg-3 col-xs-6">
-                <!-- small box -->
                 <div class="small-box bg-aqua">
                     <div class="inner">
 
@@ -31,9 +26,7 @@
                     </div>
                 </div>
             </div>
-            <!-- ./col -->
             <div class="col-lg-3 col-xs-6">
-                <!-- small box -->
                 <div class="small-box bg-green">
                     <div class="inner">
 
@@ -46,9 +39,7 @@
                     </div>
                 </div>
             </div>
-            <!-- ./col -->
             <div class="col-lg-3 col-xs-6">
-                <!-- small box -->
                 <div class="small-box bg-yellow">
                     <div class="inner">
 
@@ -61,9 +52,7 @@
                     </div>
                 </div>
             </div>
-            <!-- ./col -->
             <div class="col-lg-3 col-xs-6">
-                <!-- small box -->
                 <div class="small-box bg-red">
                     <div class="inner">
                         <h3>{{$totalTag}}</h3>
@@ -75,12 +64,8 @@
                     </div>
                 </div>
             </div>
-            <!-- ./col -->
 
-
-            <!-- Left col -->
             <section class="col-lg-12">
-                <!-- TABLE: LATEST ORDERS -->
                 <div class="box box-info">
                     <div class="box-header with-border">
                         <h3 class="box-title">Admin-Users/Editors Log Summery</h3>
@@ -93,10 +78,9 @@
                                         class="fa fa-times"></i></button>
                         </div>
                     </div>
-                    <!-- /.box-header -->
                     <div class="box-body">
                         <div class="table-responsive">
-                            <table class="table no-margin">
+                            <table id="table" class="table no-margin">
                                 <thead>
                                 <tr>
                                     <th>Admin User</th>
@@ -122,63 +106,34 @@
                                 </tbody>
                             </table>
                         </div>
-                        <!-- /.table-responsive -->
                     </div>
-                    <!-- /.box-body -->
-                    {{--<div class="box-footer clearfix">
-                        <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>
-                        <a href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">View All
-                            Orders</a>
-                    </div>--}}
-                    <!-- /.box-footer -->
+
                 </div>
-                <!-- /.box -->
             </section>
-            <!-- /.Left col -->
 
-            <!-- right col (We are only adding the ID to make the widgets sortable)-->
-            {{--<section class="col-lg-6">--}}
-
-            {{--<!-- Calendar -->--}}
-            {{--<div class="box box-solid">--}}
-            {{--<div class="box-header">--}}
-            {{--<i class="fa fa-calendar"></i>--}}
-
-            {{--<h3 class="box-title">Calendar</h3>--}}
-            {{--<!-- tools box -->--}}
-            {{--<div class="pull-right box-tools">--}}
-            {{--<!-- button with a dropdown -->--}}
-            {{--<button type="button" class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>--}}
-            {{--</button>--}}
-            {{--<button type="button" class="btn btn-success btn-sm" data-widget="remove"><i class="fa fa-times"></i>--}}
-            {{--</button>--}}
-            {{--</div>--}}
-            {{--<!-- /. tools -->--}}
-            {{--</div>--}}
-            {{--<!-- /.box-header -->--}}
-            {{--<div class="box-body no-padding">--}}
-            {{--<!--The calendar -->--}}
-            {{--<div id="calendar" style="width: 100%"></div>--}}
-            {{--</div>--}}
-            {{--<!-- /.box-body -->--}}
-            {{--</div>--}}
-            {{--<!-- /.box -->--}}
-
-            {{--</section>--}}
-            <!-- right col -->
 
 
         </section>
-        <!-- /.content -->
+
+
+
     </div>
-    <!-- /.content-wrapper -->
 @endsection
 @push('scripts')
-<script src="{{asset('superadmin/dist/js/pages/dashboard.js')}}"></script>
-<script type="text/javascript">
-    $('#dashorder').slimScroll({
-        height: '200px'
-    });
-</script>
 
+
+<script>
+    $(function () {
+        $('#table').DataTable({
+            'paging': true,
+            'lengthChange': false,
+            'searching': true,
+            'ordering': true,
+            'order': [[ 2, "desc" ]],
+            'info': true,
+            'autoWidth': false
+
+        })
+    })
+</script>
 @endpush

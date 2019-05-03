@@ -233,29 +233,159 @@ class VideoController extends Controller
     public function addVideoSubmit(Request $request)
     {
 
-        //return $request;
+        $video = new Video();
+        $video->video_id = $request->video_id;
+        $video->category_id = $request->category;
+        $video->sub_category_id = $request->sub_category;
+        $video->video_url = $request->video_url;
+        $video->video_author_url = $request->author_url;
+        $video->video_author_name = $request->author_name;
+        $video->title = $request->title;
+        $video->description = $request->description;
+        $video->thumbnail_url = $request->thumbnail_url;
+        $video->video_length = $request->video_length;
 
-        /*$newTags = $request->newTags;
-        $new_tags = explode(',',$newTags);
+        if (isset($request->feature)) {
+            $video->feature = 1;
+        } else {
+            $video->feature = 0;
 
-        print_r($new_tags) ;
-        $tag_ids = array();
-        $i = 0;
-        foreach($new_tags as $new_tag){
-            $tag = new Tag();
-            $tag->title = $new_tag;
-            $tag->save();
-
-            $tag_ids[$i] = $tag->id;
-
-            $i++;
         }
 
-        print_r($tag_ids);*/
+        $video->user_id = Auth::user()->id;
+
+
+        /*If Thumbnail image override */
+        if ($request->hasFile('profile_image')) {
+            $path = $this->getPath();
+            $destinationPath = $path . '/img/video_images/';
+            $image = $request->file('profile_image');
+            $input['imagename'] = date('d_m_y_his') . '_' . $image->getClientOriginalName(); //. $image->getClientOriginalExtension();
+            //echo $input['imagename'];
+            if ($image->move($destinationPath, $input['imagename'])) {
+                $fileurl = 'img\video_images\\' . $input['imagename'];
+                //echo $fileurl;
+                //vendors::where('id', $add->id)->update(['profile_img' => $fileurl]);
+
+                $video->thumbnail_url = 'http://youtubeapp.ovie.winexsoft.com/public/' . str_replace("\\", "/", $fileurl);
+            } else {
+                echo "Error";
+            }
+        }
+        /*End If Thumbnail image override */
+
+
+        $video->save();
+
+
+        /*new tag Collections*/
+        if(isset($request->newTags))
+        {
+            $newTags = $request->newTags;
+            $new_tags = explode(',', $newTags);
+
+            //print_r($new_tags) ;
+            $tag_ids = array();
+            $i = 0;
+            foreach ($new_tags as $new_tag) {
+                $tag = new Tag();
+                $tag->title = $new_tag;
+                $tag->save();
+
+                $tag_ids[$i] = $tag->id;
+
+                $i++;
+            }
+
+            //print_r($tag_ids);
+
+
+            /*New Tag Add to videos*/
+            foreach ($tag_ids as $tag_id) {
+
+                $tag_video = new TagVideo();
+                $tag_video->video_id = $video->id;
+                $tag_video->tag_id = $tag_id;
+                $tag_video->save();
+
+            }
+
+        }
+
+        if(isset($request->tags)){
+            foreach ($request->tags as $tag) {
+
+                $check = TagVideo::find($tag)->count();
+                if($check > 0){
+                    $tag_video = new TagVideo();
+                    $tag_video->video_id = $video->id;
+                    $tag_video->tag_id = $tag;
+                    $tag_video->save();
+                }
+
+            }
+        }
+
+
+        $this->saveUserLOg(Auth::user()->name, "Add New Video || Video ID ($video->id)");
+
+
+        return Redirect::to('admin/videos');
+
+    }
+
+    public function deleteVideo($id)
+    {
+        $vdo = Video::find($id);
+
+        $tag_videos = TagVideo::where('video_id',$id)->get();
+        foreach($tag_videos as $data){
+            $data->delete();
+        }
+
+        //return $tag_videos;
+
+
+        //return $vdo;
         //exit;
 
+        $this->saveUserLOg(Auth::user()->name, "Delete Video || Video ID ($vdo->id)");
 
-        $video = new Video();
+
+        $vdo->delete();
+        return Redirect::to('admin/videos');
+    }
+
+    public function editVideo($id)
+    {
+        $vdo = Video::find($id);
+
+        //return $vdo;
+        //$vdo_category->delete();
+        //return view('admin.edit_vdo')->with('$vdo', $vdo);
+
+        $tags = Tag::all();
+        $categories = VdoCategory::all();
+        $sub_categories = VdoSubCategory::all();
+
+        return view('admin.edit_vdo')
+            ->with('videoId', $vdo->video_id)
+            ->with('videoUrl', $vdo->video_url)
+            ->with('videoInfo', $vdo)
+            ->with('categories', $categories)
+            ->with('sub_categories', $sub_categories)
+            ->with('tags', $tags);
+
+    }
+
+    public function editVideoSubmit(Request $request, $id)
+    {
+        //return $request;
+
+
+
+
+        $video = Video::find($id);
 
         $video->video_id = $request->video_id;
         $video->category_id = $request->category;
@@ -302,107 +432,74 @@ class VideoController extends Controller
 
 
         /*new tag Collections*/
-        $newTags = $request->newTags;
-        $new_tags = explode(',', $newTags);
+        if(isset($request->newTags)) {
+            $newTags = $request->newTags;
+            $new_tags = explode(',', $newTags);
 
-        //print_r($new_tags) ;
-        $tag_ids = array();
-        $i = 0;
-        foreach ($new_tags as $new_tag) {
-            $tag = new Tag();
-            $tag->title = $new_tag;
-            $tag->save();
+            //print_r($new_tags) ;
+            $tag_ids = array();
+            $i = 0;
 
-            $tag_ids[$i] = $tag->id;
+            /*Add new tag*/
+            foreach ($new_tags as $new_tag) {
+                $tag = new Tag();
+                $tag->title = $new_tag;
+                $tag->save();
 
-            $i++;
+                $tag_ids[$i] = $tag->id;
+
+                $i++;
+            }
+
+            //print_r($tag_ids);
+
+            /*New Tags Add to videos*/
+            foreach ($tag_ids as $tag_id) {
+
+                $tag_video = new TagVideo();
+                $tag_video->video_id = $video->id;
+                $tag_video->tag_id = $tag_id;
+                $tag_video->save();
+
+            }
         }
 
-        //print_r($tag_ids);
+        if(isset($request->tags)){
+            foreach ($request->tags as $tag) {
+                $tag_video = TagVideo::where('video_id',$video->id)->where('tag_id',$tag)->first();
 
-        foreach ($request->tags as $tag) {
+                if(isset($tag_video))
+                {
+                    //echo $tag_video->id;
+                    $tag_video->delete();
+                }
 
-            $tag_video = new TagVideo();
-            $tag_video->video_id = $video->id;
-            $tag_video->tag_id = $tag;
+            }
 
-            $tag_video->save();
+            //exit;
 
-        }
-        /*New Tag Add to videos*/
-        foreach ($tag_ids as $tag_id) {
+            foreach ($request->tags as $tag) {
 
-            $tag_video = new TagVideo();
-            $tag_video->video_id = $video->id;
-            $tag_video->tag_id = $tag_id;
-            $tag_video->save();
+                $check = TagVideo::where('tag_id',$tag)->count();
+                if($check <= 0){
+                    $tag_video = new TagVideo();
+                    $tag_video->video_id = $video->id;
+                    $tag_video->tag_id = $tag;
+                    $tag_video->save();
+                }
 
-        }
-
-        $this->saveUserLOg(Auth::user()->name, "Add New Video || Video ID ($video->id)");
-
-
-        return Redirect::to('admin/videos');
-
-    }
-
-    public function deleteVideo($id)
-    {
-        $vdo = Video::find($id);
-
-        $tag_videos = TagVideo::where('video_id',$id)->get();
-        foreach($tag_videos as $data){
-            $data->delete();
+            }
         }
 
-        //return $tag_videos;
 
 
-        //return $vdo;
-        //exit;
 
-        $this->saveUserLOg(Auth::user()->name, "Delete Video || Video ID ($vdo->id)");
-
-
-        $vdo->delete();
-        return Redirect::back();
-    }
-
-    public function editVideo($id)
-    {
-        $vdo = Video::find($id);
-
-        //return $vdo;
-        //$vdo_category->delete();
-        //return view('admin.edit_vdo')->with('$vdo', $vdo);
-
-        $tags = Tag::all();
-        $categories = VdoCategory::all();
-        $sub_categories = VdoSubCategory::all();
-
-        return view('admin.edit_vdo')
-            ->with('videoId', $vdo->video_id)
-            ->with('videoUrl', $vdo->video_url)
-            ->with('videoInfo', $vdo)
-            ->with('categories', $categories)
-            ->with('sub_categories', $sub_categories)
-            ->with('tags', $tags);
-
-    }
-
-    public function editVideoSubmit(Request $request, $id)
-    {
         //echo $id;
-        $vdo_category = Tag::find($id);
 
-        $vdo_category->title = $request->vendor_title;
-
-        $vdo_category->save();
-
-        $this->saveUserLOg(Auth::user()->name, "Edit Video || Video ID ($vdo_category->id)");
+        $this->saveUserLOg(Auth::user()->name, "Edit Video || Video ID ($video->id)");
 
 
-        return Redirect::to('admin/videos');
+        return Redirect::back()->with('success',"Video Information updated Successfully.");
     }
 
     public function checkFeature(Request $request){

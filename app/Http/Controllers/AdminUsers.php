@@ -347,6 +347,7 @@ class AdminUsers extends Controller
     public function editVideoSubCategorySubmit(Request $request, $id)
     {
         //echo $id;
+        //return $request;
         $vdo_category = VdoSubCategory::find($id);
 
         $vdo_category->VdoCategory_id = $request->category_id;

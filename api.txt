@@ -8,3 +8,12 @@ tags:drama,movie
 http://youtubeapp.ovie.winexsoft.com/public/admin/Search_by_tags
 tags:Bangla Natok,Comedy,Mosharraf Karim
 
+
+
+//single tag
+http://youtubeapp.ovie.winexsoft.com/public/admin/get-video_as_tags
+tag:drama
+http://localhost/nirjhor/youtube/youtube_Final/youtubeapp/public/admin/get-video_as_tags?page=1
+
+
+//

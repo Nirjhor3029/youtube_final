@@ -151,7 +151,7 @@
                                         </div>
                                         <div class="col-sm-10">
                                             <select class=" js-example-basic-multiple form-control" name="tags[]"
-                                                    multiple="multiple" required>
+                                                    multiple="multiple" >
                                                 @foreach($tags as $tag)
                                                     <option value="{{$tag->id}}">{{$tag->title}}</option>
                                                 @endforeach

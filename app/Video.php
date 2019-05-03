@@ -21,4 +21,9 @@ class Video extends Model
     public function videoSubCategory(){
         return $this->belongsToMany(VdoSubCategory::class);
     }
+
+    public function TagVideos()
+    {
+        return $this->hasMany(TagVideo::class);
+    }
 }
