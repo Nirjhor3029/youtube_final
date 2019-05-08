@@ -95,6 +95,8 @@
                                     </div>
                                 </form>
 
+                                <a href="{{route('featured')}}" class="btn btn-success">Featured Video</a>
+
                             </div>
                         </div>
                         <!-- /.box-body -->

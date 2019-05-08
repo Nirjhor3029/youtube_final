@@ -228,6 +228,44 @@ class VideoController extends Controller
 
 
     }
+    public function featured_videos()
+    {
+
+        $flt_all = 0;
+        $flt_cat = 0;
+        $flt_sub_cat = 0;
+        $flt_tag = 0;
+        $flt_user = 0;
+
+        $videos = Video::where('feature',1)->get();
+
+        $categories = VdoCategory::all();
+        $sub_categories = VdoSubCategory::all();
+        $tags = Tag::all();
+        $admin_users = Admin::all();
+
+        //return $sub_categories;
+
+
+
+
+        //return $videos;
+
+
+        return view('admin.videos')
+            ->with('videos', $videos)
+            ->with('categories', $categories)
+            ->with('sub_categories', $sub_categories)
+            ->with('tags', $tags)
+            ->with('admin_users', $admin_users)
+            ->with('flt_all', $flt_all)
+            ->with('flt_cat', $flt_cat)
+            ->with('flt_sub_cat', $flt_sub_cat)
+            ->with('flt_tag', $flt_tag)
+            ->with('flt_user', $flt_user);
+
+
+    }
 
 
     public function addVideoSubmit(Request $request)
@@ -315,13 +353,13 @@ class VideoController extends Controller
         if(isset($request->tags)){
             foreach ($request->tags as $tag) {
 
-                $check = TagVideo::find($tag)->count();
-                if($check > 0){
+                //$check = TagVideo::find($tag)->count();
+                /*if($check > 0){*/
                     $tag_video = new TagVideo();
                     $tag_video->video_id = $video->id;
                     $tag_video->tag_id = $tag;
                     $tag_video->save();
-                }
+                /*}*/
 
             }
         }
@@ -480,15 +518,15 @@ class VideoController extends Controller
 
             foreach ($request->tags as $tag) {
 
-                $check = TagVideo::where('tag_id',$tag)->count();
-                if($check <= 0){
+               /* $check = TagVideo::where('tag_id',$tag)->count();
+                if($check <= 0){*/
                     $tag_video = new TagVideo();
                     $tag_video->video_id = $video->id;
                     $tag_video->tag_id = $tag;
                     $tag_video->save();
                 }
 
-            }
+            /*}*/
         }
 
 

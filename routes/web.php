@@ -283,6 +283,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::post('/admin/get-videoInfo-submit', 'VideoController@getVideoInfo')->name('getVideoInfo');
 
     Route::post('/admin/getVideoList', 'VideoController@getVideoList')->name('getVideoList');
+    Route::get('/admin/featured_videos', 'VideoController@featured_videos')->name('featured');
 
 
     Route::get('/admin/user_log', 'AdminUsers@showUserLog')->name('userLogList');

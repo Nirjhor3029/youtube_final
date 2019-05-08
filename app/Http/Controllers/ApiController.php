@@ -146,38 +146,38 @@ class ApiController extends Controller
 //        foreach ($Subcategories as $sub_category) {
 
 
-            $videos = Video::where('category_id',$category_id)
-                ->where('feature',1)
-                ->with('tags')
-                ->inRandomOrder()
-                ->paginate($this->Feature_paginated_number);
-            //$videos = $sub_category->video;
+        $videos = Video::where('category_id',$category_id)
+            ->where('feature',1)
+            ->with('tags')
+            ->inRandomOrder()
+            ->paginate($this->Feature_paginated_number);
+        //$videos = $sub_category->video;
 
-            $j = 0;
-            foreach ($videos as $video) {
+        $j = 0;
+        foreach ($videos as $video) {
 
-                $VideoTags = "";
-                $tags = $video->tags;
-                foreach ($tags as $tag) {
-                    $VideoTags = $VideoTags . "," . $tag->title;
-                }
-
-                $VideoClass_forFeature[$j] = [
-                    "id" => $video->id,
-                    "title" => $video->title,
-                    "details" => $video->description,
-                    "videoUrl" => $video->video_url,
-                    "youtube_ID" => $video->video_id,
-                    "thumbnil_image_link" => $video->thumbnail_url,
-                    "tags" => $VideoTags,
-                    "cat_id" => $video->category_id,
-                    "sub_cat_id" => $video->sub_category_id,
-                    "duration" => $video->video_length,
-                    "author_name" => $video->video_author_name,
-                    "author_url" => $video->video_author_url,
-                ];
-                $j++;
+            $VideoTags = "";
+            $tags = $video->tags;
+            foreach ($tags as $tag) {
+                $VideoTags = $VideoTags . "," . $tag->title;
             }
+
+            $VideoClass_forFeature[$j] = [
+                "id" => $video->id,
+                "title" => $video->title,
+                "details" => $video->description,
+                "videoUrl" => $video->video_url,
+                "youtube_ID" => $video->video_id,
+                "thumbnil_image_link" => $video->thumbnail_url,
+                "tags" => $VideoTags,
+                "cat_id" => $video->category_id,
+                "sub_cat_id" => $video->sub_category_id,
+                "duration" => $video->video_length,
+                "author_name" => $video->video_author_name,
+                "author_url" => $video->video_author_url,
+            ];
+            $j++;
+        }
 
 //        }
 
@@ -478,21 +478,25 @@ class ApiController extends Controller
     public function getVideoAsTag(Request $request)
     {
 
-
-
-
         $tag = $request->tag;
         $tag = Tag::where('title',$tag)->first();
         //return $tag;
+
+        /*Pagination page number*/
+        $videos = TagVideo::where('tag_id',$tag->id)->get();
+        $totalVideo = $videos->count();
+        //return $totalVideo;
+        $maxPage = $totalVideo / $this->paginated_number;
+        $maxPage = round($maxPage) + 1;
+        /*Pagination page number*/
+
+
+
         //$videos = Tag::where('title', $tags)->with('videos')->paginate(10);
 
         $videos = TagVideo::where('tag_id',$tag->id)->paginate($this->paginated_number);
 
-        /*Pagination page number*/
-        $totalVideo = $videos->count();
-        $maxPage = $totalVideo / $this->paginated_number;
-        $maxPage = round($maxPage) + 1;
-        /*Pagination page number*/
+
 
         //return $videos;
 
@@ -653,13 +657,13 @@ class ApiController extends Controller
 
         //echo  $characters->VideoClass->id;
 
-         $id = $characters->VideoClass->id;
-         $title = $characters->VideoClass->title;
-         $videoUrl = $characters->VideoClass->videoUrl;
-         $youtube_ID = $characters->VideoClass->youtube_ID;
-         $tags = $characters->VideoClass->tags;
-         $author_name = $characters->VideoClass->author_name;
-         $thumbnil_image_link = $characters->VideoClass->thumbnil_image_link;
+        $id = $characters->VideoClass->id;
+        $title = $characters->VideoClass->title;
+        $videoUrl = $characters->VideoClass->videoUrl;
+        $youtube_ID = $characters->VideoClass->youtube_ID;
+        $tags = $characters->VideoClass->tags;
+        $author_name = $characters->VideoClass->author_name;
+        $thumbnil_image_link = $characters->VideoClass->thumbnil_image_link;
 
 
         /*if(isset($_GET['id'])){
@@ -764,17 +768,35 @@ class ApiController extends Controller
         $videos = $query->get();*/
 
 
+        /*Pagination*/
+        $videos = Video::whereHas('tags', function($q) use($tag_ids) {
+            $q->whereIn('tag_id', $tag_ids)
+                ->groupBy('video_id')
+                ->havingRaw('COUNT(DISTINCT tag_id) = '.count($tag_ids));
+        })->get();
+
+        //return $videos;
+
+        $video_class = array();
+        $totalVideo = $videos->count();
+
+        //return $totalVideo;
+
+        $maxPage = $totalVideo / $this->paginated_number;
+        $maxPage = round($maxPage) + 1;
+        /*Pagination*/
+
+
+
         $videos = Video::whereHas('tags', function($q) use($tag_ids) {
             $q->whereIn('tag_id', $tag_ids)
                 ->groupBy('video_id')
                 ->havingRaw('COUNT(DISTINCT tag_id) = '.count($tag_ids));
         })->inRandomOrder()->paginate($this->paginated_number);
 
+        //return $videos;
 
         $video_class = array();
-        $totalVideo = $videos->count();
-        $maxPage = $totalVideo / $this->paginated_number;
-        $maxPage = round($maxPage) + 1;
 
         $i = 0;
         foreach ($videos as $video) {
@@ -858,9 +880,9 @@ class ApiController extends Controller
         //$tag = Tag::find($tags);
         //return $tag;
 
-       /* foreach($tags as $tag){
-            $tag_ids[] = $tag->id;
-        }*/
+        /* foreach($tags as $tag){
+             $tag_ids[] = $tag->id;
+         }*/
         //return $tag_ids;
 
         $videos = Video::whereHas('tags', function($q) use($tag_ids) {
