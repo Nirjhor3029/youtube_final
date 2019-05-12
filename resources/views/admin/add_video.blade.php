@@ -18,9 +18,6 @@
         height: 200px;
     }
 
-
-
-
     .double {
         zoom: 2;
         transform: scale(2);
@@ -56,14 +53,14 @@
             <div class="col-md-12" style="margin-top:2rem;">
                 <div class="box box-primary">
                     <?php
-                    $msg = null;
-                        $msg = Session::get('msg')
+                    use Illuminate\Support\Facades\Session;$msg = null;
+                    $msg = Session::get('msg')
                     ?>
                     @if(isset($msg))
-                    <div class="alert alert-danger">
-                        <center><strong>Danger!</strong> {{$msg}}.</center>
-                    </div>
-                        @endif
+                        <div class="alert alert-danger">
+                            <center><strong>Danger!</strong> {{$msg}}.</center>
+                        </div>
+                    @endif
                     <div class="box-body" style="margin-top:2rem;">
                         <form action="{{route('getVideoInfo')}}" method="post" class="form-horizontal"
                               enctype="multipart/form-data">
@@ -82,7 +79,6 @@
                                 <button class="btn btn-success pull-right" type="submit">Get Video Info</button>
                             </div>
                         </form>
-
 
 
                     </div>
@@ -116,8 +112,10 @@
                                                         style="color:red;">*</span> </label>
                                         </div>
                                         <div class="col-sm-10">
-                                            <select class="form-control" name="category" required>
+                                            <select class="form-control" name="category" id="cat" required>
                                                 <option value="{{null}}">Select Category</option>
+
+
                                                 @foreach($categories as $category)
                                                     <option value="{{$category->id}}">{{$category->title}}</option>
                                                 @endforeach
@@ -133,13 +131,14 @@
                                                         style="color:red;">*</span> </label>
                                         </div>
                                         <div class="col-sm-10">
-                                            <select class="form-control" name="sub_category" required>
-                                                <option value="{{null}}">Select Sub Category</option>
-                                                @foreach($sub_categories as $sub_category)
+                                            <select class="form-control" name="sub_category" id="sub_cat" required
+                                                    disabled>
+                                                <option value="{{null}}">Select Category First</option>
+                                                {{--@foreach($sub_categories as $sub_category)
                                                     <option value="{{$sub_category->id}}">{{$sub_category->title}}
                                                         ( {{$sub_category->vdoCategory->title}} )
                                                     </option>
-                                                @endforeach
+                                                @endforeach--}}
                                             </select>
                                         </div>
                                     </div>
@@ -148,12 +147,23 @@
                                         <div class="col-sm-2">
                                             <label for="vendor_name" class="control-label">Tags<span
                                                         style="color:red;">*</span> </label>
+                                            <?php
+                                            $saved_tags = Session::get('tags');
+                                            ?>
+
+                                            <input type="checkbox" name="save_tag" {{(isset($saved_tags))? "checked":""}} >Save
                                         </div>
                                         <div class="col-sm-10">
+                                            <?php
+                                            if(isset($saved_tags[0])){
+                                                $first_tag = \App\Tag::find($saved_tags[0]);
+                                                echo $first_tag->title;
+                                            }
+                                            ?>
                                             <select class=" js-example-basic-multiple form-control" name="tags[]"
-                                                    multiple="multiple" >
+                                                    multiple="multiple">
                                                 @foreach($tags as $tag)
-                                                    <option value="{{$tag->id}}">{{$tag->title}}</option>
+                                                    <option value="{{$tag->id}}" {{--{{array_search($tag->id, $saved_tags)? "selected":""}}--}}>{{$tag->title}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -169,7 +179,8 @@
                                                         style="color:red;">*</span> </label>
                                         </div>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" name="newTags" placeholder="Comedy,Feature,Trend,New">
+                                            <input type="text" class="form-control" name="newTags"
+                                                   placeholder="Comedy,Feature,Trend,New">
                                         </div>
                                         {{--<div class="col-sm-2">
                                             <a class="btn btn-primary" data-toggle="modal" data-target="#myModal">Add
@@ -296,7 +307,7 @@
                                         </div>
                                         <div class="col-sm-10 double">
                                             {{--<input type="checkbox" class="form-control" name="checkbox" >--}}
-                                            <input type="checkbox" name="feature" value="1" >
+                                            <input type="checkbox" name="feature" value="1">
                                         </div>
                                     </div>
 
@@ -358,11 +369,33 @@
 
         </section>
         <!-- /.content -->
+
+        <button>click</button>
     </div>
 
 @endsection
 
 @push('scripts')
+
+<script>
+    $(document).ready(function () {
+        $("#cat").on("change", function () {
+
+            var id = $("#cat").val();
+
+            //alert(id);
+            $.ajax({
+                type: "get",
+                url: "subcategory/category/" + id,
+                success: function (result) {
+                    console.log(result);
+                    $("#sub_cat").html(result);
+                    $("#sub_cat").attr("disabled", false);
+                }
+            });
+        });
+    });
+</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 

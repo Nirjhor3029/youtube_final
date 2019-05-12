@@ -361,6 +361,8 @@ Route::group(['middleware' => ['auth:admin']], function () {
 
     Route::post('/query_inbox/sendMessage', 'QueryBoxController@sendMessage')->name('User.SendMessage');
 
+    Route::get('admin/subcategory/category/{id}',"VideoController@selectSubCategory");
+
 
 });
 

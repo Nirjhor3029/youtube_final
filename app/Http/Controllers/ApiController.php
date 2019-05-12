@@ -98,17 +98,23 @@ class ApiController extends Controller
         $VideoClass_forFeature = array();
 
 
-        $Subcategories = VdoSubCategory::with('video')->where('VdoCategory_id', $category_id)->get();
+        //$Subcategories = VdoSubCategory::with('video')->where('VdoCategory_id', $category_id)->get();
+        $Subcategories = VdoSubCategory::where('VdoCategory_id', $category_id)->get();
 
         $i = 0;
         foreach ($Subcategories as $sub_category) {
 
 
-            $videos = $sub_category->video;
+            //$videos = $sub_category->video;
+
+            $videos = Video::where('sub_category_id',$sub_category->id)->inRandomOrder()->paginate($this->paginated_number);
 
             $j = 0;
             $VideoClass = null;
             foreach ($videos as $video) {
+
+
+
                 $VideoTags = "";
                 $tags = $video->tags;
                 foreach ($tags as $tag) {
@@ -423,12 +429,12 @@ class ApiController extends Controller
         $totalVideo = Video::where('category_id', $cat_id)->where('sub_category_id', $sub_cat_id)->count();
 
         $maxPage = $totalVideo / $this->paginated_number;
-        $maxPage = round($maxPage) + 1;
+        $maxPage = round($maxPage);
 
         $video_class = array();
         //echo $cat_id.$sub_cat_id;
 
-        $videos = Video::where('category_id', $cat_id)->where('sub_category_id', $sub_cat_id)->inRandomOrder()->paginate($this->paginated_number);
+        $videos = Video::where('category_id', $cat_id)->where('sub_category_id', $sub_cat_id)->paginate($this->paginated_number);
 
         $i = 0;
         foreach ($videos as $video) {
@@ -842,6 +848,7 @@ class ApiController extends Controller
 
 
     }
+
     public function searchByTagIds(Request $request){
         //return $request;
         /*$tags = $request->tags;

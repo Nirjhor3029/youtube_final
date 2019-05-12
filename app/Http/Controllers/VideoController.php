@@ -12,6 +12,7 @@ use App\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 
 class VideoController extends Controller
 {
@@ -270,6 +271,26 @@ class VideoController extends Controller
 
     public function addVideoSubmit(Request $request)
     {
+        if(isset($request->save_tag)){
+            Session::put('tags',$request->tags);
+            echo "session save";
+        }else{
+            Session::put('tags',null);
+        }
+
+        if(isset($request->save_tag)){
+            Session::put('tags',$request->tags);
+            echo "session save";
+        }else{
+            Session::put('tags',null);
+        }
+
+
+        print_r($request->tags);
+
+
+
+        return $request->tags;
 
         $video = new Video();
         $video->video_id = $request->video_id;
@@ -551,6 +572,19 @@ class VideoController extends Controller
 
 
 
+    public function selectSubCategory($id){
+
+        $category = VdoCategory::find($id);
+        $subCategories = VdoSubCategory::where('VdoCategory_id',$id)->get();
+
+        echo "<option value=".null.">Select Any Sub Category</option>";
+
+        foreach($subCategories as $subCategory)
+        {
+            echo "<option value=".$subCategory->id.">$subCategory->title ($category->title) </option>";
+        }
+
+    }
 
 
 
